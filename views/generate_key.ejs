@@ -1,0 +1,35 @@
+<html>
+    <head>
+        <title>Generate a new API key</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.1/angular.min.js"></script>
+    </head>
+    <script type="text/javascript">
+
+        var app = angular.module('api_keygen', []);
+        app.controller('keygen', function($scope, $http) {
+            $scope.response = {};
+            $scope.key = {};
+            $scope.req_key = function() {
+                $http.post('/new_api_key', $scope.key)
+                .then(function(res) {
+                    $scope.response.message = res.data.message;
+                }).catch(function(err) {
+                    alert("Key request failed!");
+                    $scope.response.message = err;
+                });
+            }
+        });
+
+    </script>
+    <body ng-app="api_keygen">
+        <fieldset ng-controller="keygen">
+            <legend>Generate a new API key</legend>
+            <form ng-submit="req_key()">
+                <p>{{ response.message.api_key.key || response.message }}</p>
+                <label for="passphrase">Enter a passphrase for the key:</label>
+                <input type="password" id="passphrase" ng-model="key.passphrase">
+                <button type="submit">Request key</button>
+            </form>
+        </fieldset>
+    </body>
+</html>
