@@ -1,0 +1,125 @@
+<html>
+    <head>
+        <title>Piggy</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    </head>
+    <script type="text/javascript">
+        $(document).ready(function() {
+
+            var forward = 0b00001000,
+                backward = 0b00000100,
+                left = 0b00000001,
+                right = 0b00000010,
+                stop = 0b00000000;
+
+            var working_code = 0b00000000,
+                map = { 38: false, 40: false, 37: false, 39: false };
+
+            // ON SCREEN KEYS
+            $('#remote_control').delegate('.btn', 'mousedown', function() {
+                switch ($(this).attr('data-id')) {
+                    case 'forward':
+                        send_instruction(forward);
+                        break;
+                    case 'forward-left':
+                        send_instruction(forward + left);
+                        break;
+                    case 'forward-right':
+                        send_instruction(forward + right);
+                        break;
+                    case 'backward':
+                        send_instruction(backward);
+                        break;
+                    case 'backward-left':
+                        send_instruction(backward + left);
+                        break;
+                    case 'backward-right':
+                        send_instruction(backward + right);
+                        break;
+                    case 'left':
+                        send_instruction(left);
+                        break;
+                    case 'right':
+                        send_instruction(right);
+                        break;
+                }
+            });
+
+            $('#remote_control').delegate('.btn', 'mouseup', function() {
+                console.log("Stopping...");
+                send_instruction(stop);
+            });
+
+            // KEY PRESS
+            // $('#remote_control').keydown(function(event) {
+            //     if (event.keyCode in map) {
+            //         map[event.keyCode] = true;
+            //         if (map[38]) {
+            //             send_instruction(forward);
+            //         } else if (map[38] && map[37]) {
+            //             send_instruction(forward + left);
+            //         } else if (map[38] && map[39]) {
+            //             send_instruction(forward + right);
+            //         } else {
+            //             send_instruction(stop);
+            //         }
+            //     }
+            // }).keyup(function(e) {
+            //     if (e.keyCode in map) {
+            //         map[e.keyCode] = false;
+            //     }
+            // });
+
+            function send_instruction(instruction) {
+                $.post('/remote_control', {
+                    data: instruction
+                }, function(data) {
+                    console.log(data);
+                });
+            }
+
+        });
+    </script>
+    <style>
+        html, body {
+            padding: 0px;
+            margin: 0px;
+        }
+
+        .controller {
+            width: 200px;
+            margin-left: auto;
+            margin-right: auto;
+            height: auto;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .controller_btn {
+            padding: 20px;
+            font-size: 2em;
+            text-emphasis: bold;
+        }
+    </style>
+    <body ng-app="piggy">
+        <div class="controller" id="remote_control">
+            <table>
+                <tr colspan="3">
+                    <td><button class="controller_btn btn" data-id="forward-left">FL</button></td>
+                    <td><button class="controller_btn btn" data-id="forward">^</button></td>
+                    <td><button class="controller_btn btn" data-id="forward-right">FR</button></td>
+                </tr>
+                <tr colspan="3">
+                    <td><button class="controller_btn btn" data-id="left"><</button></td>
+                    <td></td>
+                    <td><button class="controller_btn btn" data-id="right">></button></td>
+                </tr>
+                <tr colspan="3">
+                    <td><button class="controller_btn btn" data-id="backward-left">BL</button></td>
+                    <td><button class="controller_btn btn" data-id="backward">v</button></td>
+                    <td><button class="controller_btn btn" data-id="backward-right">BR</button></td>
+                </tr>
+            </table>
+        </div>
+    </body>
+</html>
